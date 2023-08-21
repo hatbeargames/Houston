@@ -35,6 +35,8 @@ public class PlayerMovement : MonoBehaviour
     bool isShieldActive;
     bool wasEnergyUsed = false;
     private bool wereThrustersActive = false;
+    bool thrustersRecharged = true;
+    bool energyRecharged = true;
     Vector2 moveDirection = Vector2.zero;
     public InputAction playerControls;
     LaserGun lg;
@@ -57,17 +59,43 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        isShieldActive = Input.GetMouseButton(1);
+        if(playerStats.currentThrusters == playerStats.GetMaxThrust())
+        {
+            thrustersRecharged = true;
+        }
+
+        if(playerStats.currentEnergy == playerStats.GetMaxEnergy())
+        {
+            energyRecharged = true;
+        }
+        CheckThrusterStats();
         moveDirection = playerControls.ReadValue<Vector2>();
-
-        isLeftThrusterActive = Input.GetKey(KeyCode.D);
-        isRightThrusterActive = Input.GetKey(KeyCode.A);
-        isUpThrusterActive = Input.GetKey(KeyCode.W);
-
+        if (playerStats.currentThrusters > 0 && thrustersRecharged)
+        {
+            isLeftThrusterActive = Input.GetKey(KeyCode.D);
+            isRightThrusterActive = Input.GetKey(KeyCode.A);
+            isUpThrusterActive = Input.GetKey(KeyCode.W);
+        }
+        else
+        {
+            thrustersRecharged = false;
+            isLeftThrusterActive = false;
+            isRightThrusterActive = false;
+            isUpThrusterActive = false;
+        }
         L_Thruster.SetActive(isUpThrusterActive || isLeftThrusterActive);
         R_Thruster.SetActive(isUpThrusterActive || isRightThrusterActive);
+        if (playerStats.currentEnergy > 0)
+        {
+            isShieldActive = Input.GetMouseButton(1);
+        }
+        else
+        {
+            energyRecharged = false;
+            isShieldActive = false;
+        }
         Shield.SetActive(isShieldActive);
-
+        CheckEnergyStats();
         if (isShieldActive || lg.isFiring)
         {
             if (!wasEnergyUsed)
@@ -75,15 +103,14 @@ public class PlayerMovement : MonoBehaviour
                 wasEnergyUsed = true;
                 playerStats.StopEnergyBarLerpBack();
             }
-            if (isShieldActive && lg.isFiring) 
+            if (isShieldActive && lg.isFiring)
             {
-                playerStats.ConsumeEnergy((energyConsumptionRate+ energyConsumptionRate) * Time.deltaTime);
-            } 
+                playerStats.ConsumeEnergy((energyConsumptionRate + energyConsumptionRate) * Time.deltaTime);
+            }
             else
             {
                 playerStats.ConsumeEnergy(energyConsumptionRate * Time.deltaTime);
             }
-            
         }
         else
         {
@@ -99,8 +126,8 @@ public class PlayerMovement : MonoBehaviour
                 wereThrustersActive = true;
                 playerStats.StopThrusterBarLerpBack();
             }
-            gravityMultiplier = 1.0f;
-            playerStats.ConsumeThrusters(thrusterConsumptionRate * Time.deltaTime);
+                gravityMultiplier = 1.0f;
+                playerStats.ConsumeThrusters(thrusterConsumptionRate * Time.deltaTime);
         }
         else
         {
@@ -114,11 +141,14 @@ public class PlayerMovement : MonoBehaviour
     }
     private void FixedUpdate()
     {
+        
         //Calculate and clamp the vertical velocity so it doesn't compound.
         float verticalVelocity = moveDirection.y * moveSpeed + rb.velocity.y * gravityMultiplier;
         verticalVelocity = Mathf.Clamp(verticalVelocity, minVerticalSpeed, maxVerticalSpeed);
-
-        rb.velocity = new Vector2(moveDirection.x * moveSpeed, verticalVelocity);
+        if ((isUpThrusterActive || isRightThrusterActive || isLeftThrusterActive) && thrustersRecharged)
+        {
+            rb.velocity = new Vector2(moveDirection.x * moveSpeed, verticalVelocity);
+        }
         //float currentRotation = Mathf.Repeat(transform.rotation.eulerAngles.z, 360f);
         float currentRotation;
         // Calculate target rotation based on thrusters
@@ -144,5 +174,31 @@ public class PlayerMovement : MonoBehaviour
         }
 
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+    }
+    void CheckThrusterStats()
+    {
+        if ((playerStats.currentThrusters >= (playerStats.GetMaxThrust() * playerStats.GetAuxillaryThrusterThreshold()))&& !thrustersRecharged)
+        {
+            //Debug.Log("In range to set thrusters to max");
+            playerStats.StopThrusterBarLerpBack();
+            playerStats.currentThrusters = playerStats.GetMaxThrust();
+        }
+    }
+    void CheckEnergyStats()
+    {
+        if ((playerStats.currentEnergy >= (playerStats.GetMaxEnergy() * playerStats.GetAuxillaryEnergyThreshold())) && !energyRecharged)
+        {
+            Debug.Log("In range to set energy to max");
+            playerStats.StopEnergyBarLerpBack();
+            playerStats.currentEnergy = playerStats.GetMaxEnergy();
+        }
+    }
+    public bool GetEnergyStatus()
+    {
+        return energyRecharged;
+    }
+    public bool GetThrusterStatus()
+    {
+        return thrustersRecharged;
     }
 }

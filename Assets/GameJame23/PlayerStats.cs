@@ -13,10 +13,13 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] StatsBarScript EnergyBar;
     [SerializeField] LerpBackToMax thrusterLerpScript;
     [SerializeField] LerpBackToMax energyLerpScript;
+    [SerializeField] float AuxillaryEnergyThreshold = .99f;
+    [SerializeField] float AuxillaryThrusterThreshold = .99f;
     //PUBLIC INTS FOR CHECKING
     public int currentHealth;
     public float currentThrusters;
     public float currentEnergy;
+    
 
     // Start is called before the first frame update
     void Start()
@@ -33,20 +36,7 @@ public class PlayerStats : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            TakeDamage(20);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            TakeEnergyDamage(20);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            TakeThrusterDamage(20);
-        }
-        
+    {   
     }
     void TakeDamage(int dmg)
     {
@@ -64,6 +54,14 @@ public class PlayerStats : MonoBehaviour
         currentThrusters -= dmg;
         ThrusterBar.SetBarValue(currentThrusters);
         thrusterLerpScript.StartLerpBack();
+    }
+    public float GetMaxThrust()
+    {
+        return startingThrusters;
+    }
+    public float GetMaxEnergy()
+    {
+        return startingEnergy;
     }
     public void ConsumeThrusters(float amount)
     {
@@ -85,5 +83,21 @@ public class PlayerStats : MonoBehaviour
     public void StopEnergyBarLerpBack()
     {
         energyLerpScript.StopLerpBack();
+    }
+    public void UpgradeAuxillaryThrusters()
+    {
+        AuxillaryThrusterThreshold = .5f;
+    }
+    public void UpgradeAuxillaryEnergy()
+    {
+        AuxillaryEnergyThreshold = .5f;
+    }
+    public float GetAuxillaryEnergyThreshold() 
+    {
+        return AuxillaryEnergyThreshold;
+    }
+    public float GetAuxillaryThrusterThreshold()
+    {
+        return AuxillaryThrusterThreshold;
     }
 }

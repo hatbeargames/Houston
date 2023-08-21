@@ -20,6 +20,7 @@ public class LaserGun : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        pm = FindObjectOfType<PlayerMovement>();
         Vector2 posOnScreen = Camera.main.WorldToViewportPoint(transform.position);
         Vector2 mouseOnScreen = (Vector2)Camera.main.ScreenToViewportPoint(Input.mousePosition);
         float angle = AngleDelta(posOnScreen, mouseOnScreen) + offsetAngle;
@@ -39,14 +40,19 @@ public class LaserGun : MonoBehaviour
         float angle = AngleDelta(posOnScreen, mouseOnScreen)+offsetAngle;
 
         transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, angle));
-        isFiring = Input.GetMouseButton(0);
+        if (pm.GetEnergyStatus())
+        {
+            //Debug.Log("Laser Firing!");
+            isFiring = Input.GetMouseButton(0);
+        }
+        else 
+        { 
+            isFiring = false; 
+        }
         laserParticles.SetActive(isFiring);
         DrawLaser();
         if (isFiring)
         {
-            //Debug.Log("Laser Fired");
-            //lr.material = firingLaser;
-            //lr.SetWidth(firingWidth, firingWidth);
             lr.startWidth = firingWidth;
             lr.endWidth = firingWidth;
             lr.startColor = firingColor;
@@ -54,7 +60,6 @@ public class LaserGun : MonoBehaviour
         }
         else
         {
-            //lr.material = aimingLaser;
             lr.startWidth = aimingWidth;
             lr.endWidth = aimingWidth;
             lr.startColor = aimingColor;
