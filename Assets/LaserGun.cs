@@ -9,6 +9,7 @@ public class LaserGun : MonoBehaviour
     public bool isFiring;
     [SerializeField] GameObject firePoint;
     [SerializeField] GameObject maxLaserDistance;
+    [SerializeField] GameObject laserParticles;
     [SerializeField] Material aimingLaser;
     [SerializeField] Material firingLaser;
     [SerializeField] Color aimingColor;
@@ -39,6 +40,7 @@ public class LaserGun : MonoBehaviour
 
         transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, angle));
         isFiring = Input.GetMouseButton(0);
+        laserParticles.SetActive(isFiring);
         DrawLaser();
         if (isFiring)
         {
