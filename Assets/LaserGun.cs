@@ -6,13 +6,14 @@ public class LaserGun : MonoBehaviour
 {
     public float offsetAngle;
     [SerializeField] LineRenderer lr;
-    bool isFiring;
+    public bool isFiring;
     [SerializeField] GameObject firePoint;
     [SerializeField] GameObject maxLaserDistance;
     [SerializeField] Material aimingLaser;
     [SerializeField] Material firingLaser;
     [SerializeField] Color aimingColor;
     [SerializeField] Color firingColor;
+    [SerializeField] PlayerMovement pm;
     float aimingWidth = 0.007f;
     public float firingWidth = .05f;
     // Start is called before the first frame update
