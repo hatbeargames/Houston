@@ -20,7 +20,7 @@ public class PlayerMovement : MonoBehaviour
     bool isRightThrusterActive;
     bool isUpThrusterActive;
     bool isShieldActive;
-    bool isFiring;
+
 
     private void OnEnable()
     {

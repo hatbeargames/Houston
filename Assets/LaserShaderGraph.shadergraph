@@ -164,6 +164,20 @@
             },
             "m_InputSlot": {
                 "m_Node": {
+                    "m_Id": "9aecd9bb2d76460986223e97b392e1b8"
+                },
+                "m_SlotId": 0
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "9a342e6840454b898fba53863d5c84cb"
+                },
+                "m_SlotId": 2
+            },
+            "m_InputSlot": {
+                "m_Node": {
                     "m_Id": "b39050647b754daf909711caee565e44"
                 },
                 "m_SlotId": 0
@@ -222,7 +236,7 @@
                 "m_Node": {
                     "m_Id": "f8aec0c591f44928a27a05bf0fe85778"
                 },
-                "m_SlotId": 1
+                "m_SlotId": 0
             }
         },
         {
@@ -250,7 +264,7 @@
                 "m_Node": {
                     "m_Id": "f8aec0c591f44928a27a05bf0fe85778"
                 },
-                "m_SlotId": 0
+                "m_SlotId": 1
             }
         },
         {
@@ -422,7 +436,7 @@
     "m_DefaultRefNameVersion": 1,
     "m_RefNameGeneratedByDisplayName": "MainTex",
     "m_DefaultReferenceName": "_MainTex",
-    "m_OverrideReferenceName": "",
+    "m_OverrideReferenceName": "MainTex_",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
     "m_CustomSlotLabel": "",
@@ -633,13 +647,13 @@
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
     "m_Value": {
-        "r": 0.0003035269910469651,
+        "r": 1.0,
         "g": 1.0,
-        "b": 0.162029430270195,
-        "a": 1.0
+        "b": 1.0,
+        "a": 0.3921568691730499
     },
     "isMainColor": false,
-    "m_ColorMode": 1
+    "m_ColorMode": 0
 }
 
 {
@@ -667,7 +681,7 @@
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
-    "m_Value": 30.0,
+    "m_Value": 30.600000381469728,
     "m_FloatType": 0,
     "m_RangeValues": {
         "x": 0.0,
@@ -686,10 +700,10 @@
     "m_ShaderOutputName": "SpriteMask",
     "m_StageCapability": 2,
     "m_Value": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0,
-        "w": 1.0
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
     },
     "m_DefaultValue": {
         "x": 0.0,
@@ -991,7 +1005,7 @@
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
-    "m_Value": 10.0,
+    "m_Value": 9.0,
     "m_FloatType": 0,
     "m_RangeValues": {
         "x": 0.0,
@@ -1171,10 +1185,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -161.59996032714845,
-            "y": -878.4000244140625,
-            "width": 208.0,
-            "height": 277.60003662109377
+            "x": 5.333327770233154,
+            "y": -729.9999389648438,
+            "width": 129.3332977294922,
+            "height": 95.99993896484375
         }
     },
     "m_Slots": [
@@ -1191,7 +1205,7 @@
         "opposite"
     ],
     "m_Precision": 0,
-    "m_PreviewExpanded": true,
+    "m_PreviewExpanded": false,
     "m_PreviewMode": 0,
     "m_CustomColors": {
         "m_SerializableColors": []
@@ -1342,10 +1356,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -375.178466796875,
-            "y": -625.45166015625,
-            "width": 0.0,
-            "height": 0.0
+            "x": -22.000024795532228,
+            "y": -488.0,
+            "width": 196.66668701171876,
+            "height": 36.0
         }
     },
     "m_Slots": [
@@ -1659,10 +1673,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 1568.0001220703125,
-            "y": -271.20001220703127,
-            "width": 104.7999267578125,
-            "height": 33.5999755859375
+            "x": 1509.3331298828125,
+            "y": -526.6666259765625,
+            "width": 106.666748046875,
+            "height": 36.0
         }
     },
     "m_Slots": [
