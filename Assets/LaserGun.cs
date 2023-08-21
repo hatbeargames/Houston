@@ -42,7 +42,7 @@ public class LaserGun : MonoBehaviour
         DrawLaser();
         if (isFiring)
         {
-            Debug.Log("Laser Fired");
+            //Debug.Log("Laser Fired");
             //lr.material = firingLaser;
             //lr.SetWidth(firingWidth, firingWidth);
             lr.startWidth = firingWidth;
