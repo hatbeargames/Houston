@@ -15,6 +15,7 @@ public class LaserGun : MonoBehaviour
     [SerializeField] Color aimingColor;
     [SerializeField] Color firingColor;
     [SerializeField] PlayerMovement pm;
+    [SerializeField] EdgeCollider2D laserCollider;
     float aimingWidth = 0.007f;
     public float firingWidth = .05f;
     // Start is called before the first frame update
@@ -25,11 +26,16 @@ public class LaserGun : MonoBehaviour
         Vector2 mouseOnScreen = (Vector2)Camera.main.ScreenToViewportPoint(Input.mousePosition);
         float angle = AngleDelta(posOnScreen, mouseOnScreen) + offsetAngle;
         transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, angle));
+        laserCollider.points = new Vector2[2] { Vector2.zero, Vector2.zero };
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!isFiring)
+        {
+            laserCollider.points = new Vector2[2] { Vector2.zero, Vector2.zero };
+        }
         //Current coordinates of the laser Gun
         Vector2 posOnScreen = Camera.main.WorldToViewportPoint(transform.position);
 
@@ -70,11 +76,21 @@ public class LaserGun : MonoBehaviour
     {
         lr.SetPosition(0, firePoint.transform.position);
         lr.SetPosition(1, maxLaserDistance.transform.position);
+        if (isFiring)
+        {
+            UpdateLaserCollider();
+        }
     }
     float AngleDelta(Vector3 a, Vector3 b)
     {
         return Mathf.Atan2(a.y - b.y, a.x - b.x) * Mathf.Rad2Deg;
     }
 
+    void UpdateLaserCollider()
+    {
+        Vector2 localStartPos = transform.InverseTransformPoint(firePoint.transform.position);
+        Vector2 localEndPos = transform.InverseTransformPoint(maxLaserDistance.transform.position);
 
+        laserCollider.points = new Vector2[2] { localStartPos, localEndPos };
+    }
 }
