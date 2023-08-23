@@ -37,4 +37,5 @@ public class CameraZoomController : MonoBehaviour
 
         virtualCamera.m_Lens.OrthographicSize = Mathf.Lerp(virtualCamera.m_Lens.OrthographicSize, tgt_OrthoSize, zoomSpeed * Time.deltaTime);
     }
+
 }

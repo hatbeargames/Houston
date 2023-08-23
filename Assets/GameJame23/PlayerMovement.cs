@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
+using Cinemachine;
 public class PlayerMovement : MonoBehaviour
 {
     
@@ -12,11 +12,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] GameObject R_Thruster;
     [SerializeField] GameObject Shield;
     public PlayerStats playerStats;
-
+    [SerializeField] public CinemachineBrain camBrain;
+    Coroutine camUpdateCoroutine;
     //PHYSICS VARIABLES
-    public float rotationSpeed = 10f; // Adjust the rotation speed as needed
+    public float rotationSpeed = 5f; // Adjust the rotation speed as needed
     private Quaternion targetRotation;
-    public float maxRotationAngle = 45f;
+    public float maxRotationAngle = 22.5f;
     public float defaultRotationAngle = 0f;
     private float gravityMultiplier = 1.0f;
     public float gravityIncreaseRate = 0.1f; // Adjust how quickly you want gravity to increase
@@ -40,6 +41,8 @@ public class PlayerMovement : MonoBehaviour
     Vector2 moveDirection = Vector2.zero;
     public InputAction playerControls;
     LaserGun lg;
+    bool isRotating = false;
+    Coroutine rotationCoroutine;
 
     private void OnEnable()
     {
@@ -54,12 +57,14 @@ public class PlayerMovement : MonoBehaviour
     {
         playerStats = FindObjectOfType<PlayerStats>();
         lg = FindObjectOfType<LaserGun>();
+        camBrain = Camera.main.GetComponent<CinemachineBrain>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(playerStats.currentThrusters == playerStats.GetMaxThrust())
+        moveDirection = playerControls.ReadValue<Vector2>();
+        if (playerStats.currentThrusters == playerStats.GetMaxThrust())
         {
             thrustersRecharged = true;
         }
@@ -69,12 +74,17 @@ public class PlayerMovement : MonoBehaviour
             energyRecharged = true;
         }
         CheckThrusterStats();
-        moveDirection = playerControls.ReadValue<Vector2>();
+        bool bothLeftAndRight = Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.D);
+        
         if (playerStats.currentThrusters > 0 && thrustersRecharged)
         {
-            isLeftThrusterActive = Input.GetKey(KeyCode.D);
-            isRightThrusterActive = Input.GetKey(KeyCode.A);
-            isUpThrusterActive = Input.GetKey(KeyCode.W);
+            //Original Logic
+            isLeftThrusterActive = (Input.GetKey(KeyCode.D) && Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.D));
+            isRightThrusterActive = (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A));
+            isUpThrusterActive = Input.GetKey(KeyCode.W) && !(Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.A));
+            //isRightThrusterActive = !bothLeftAndRight && (Input.GetKey(KeyCode.A) || (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.W)));
+            //isLeftThrusterActive = !bothLeftAndRight && (Input.GetKey(KeyCode.D) || (Input.GetKey(KeyCode.D) && Input.GetKey(KeyCode.W)));
+            //isUpThrusterActive = Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D);
         }
         else
         {
@@ -121,12 +131,12 @@ public class PlayerMovement : MonoBehaviour
         }
         if (isLeftThrusterActive || isRightThrusterActive || isUpThrusterActive)
         {
+            
             if (!wereThrustersActive) // This means the thrusters were just activated
             {
                 wereThrustersActive = true;
                 playerStats.StopThrusterBarLerpBack();
             }
-                gravityMultiplier = 1.0f;
                 playerStats.ConsumeThrusters(thrusterConsumptionRate * Time.deltaTime);
         }
         else
@@ -135,20 +145,74 @@ public class PlayerMovement : MonoBehaviour
             {
                 wereThrustersActive = false;
             }
-            gravityMultiplier += gravityIncreaseRate * Time.deltaTime;
-            gravityMultiplier = Mathf.Clamp(gravityMultiplier, 1.0f, maxGravityMultiplier);
+
         }
+        isRotating = isUpThrusterActive || isRightThrusterActive || isLeftThrusterActive;
+        //Debug.Log(isRotating);
+        // Handle the rotation coroutine
+
+        //ManuallyUpdateCamera(Time.deltaTime);
+        //if ((isLeftThrusterActive || isRightThrusterActive || isUpThrusterActive || isShieldActive || lg.isFiring) && camUpdateCoroutine == null)
+        //{
+        //    camUpdateCoroutine = StartCoroutine(ManuallyUpdateCameraCoroutine());
+        //}
+        //Debug.Log("UpThrusters: " + isUpThrusterActive + ", LeftThrusterActive: " + isLeftThrusterActive + ", RightThruster: " + isRightThrusterActive);
     }
     private void FixedUpdate()
     {
-        
+
+        if (isRotating && rotationCoroutine == null)
+        {
+            rotationCoroutine = StartCoroutine(RotationCoroutine());
+        }
+        else if (!isRotating && rotationCoroutine != null)
+        {
+            StopCoroutine(rotationCoroutine);
+            rotationCoroutine = null;
+        }
         //Calculate and clamp the vertical velocity so it doesn't compound.
         float verticalVelocity = moveDirection.y * moveSpeed + rb.velocity.y * gravityMultiplier;
         verticalVelocity = Mathf.Clamp(verticalVelocity, minVerticalSpeed, maxVerticalSpeed);
         if ((isUpThrusterActive || isRightThrusterActive || isLeftThrusterActive) && thrustersRecharged)
         {
             rb.velocity = new Vector2(moveDirection.x * moveSpeed, verticalVelocity);
+            gravityMultiplier = 1.0f;
         }
+        else
+        {
+            gravityMultiplier += gravityIncreaseRate * Time.deltaTime;
+            gravityMultiplier = Mathf.Clamp(gravityMultiplier, 1.0f, maxGravityMultiplier);
+        }
+
+        //float currentRotationZ = NormalizeAngle(transform.rotation.eulerAngles.z);
+        //float targetRotationZ = defaultRotationAngle; // Default value
+
+        //if (isUpThrusterActive && !isRightThrusterActive && !isLeftThrusterActive)
+        //{
+        //    targetRotationZ = defaultRotationAngle;
+
+        //}
+        //else if (isLeftThrusterActive && !isRightThrusterActive)
+        //{
+        //    float desiredRotation = currentRotationZ - rotationSpeed;
+        //    targetRotationZ = Mathf.Clamp(desiredRotation, -maxRotationAngle, maxRotationAngle);
+
+        //}
+        //else if (isRightThrusterActive && !isLeftThrusterActive)
+        //{
+        //    float desiredRotation = currentRotationZ + rotationSpeed;
+        //    targetRotationZ = Mathf.Clamp(desiredRotation, -maxRotationAngle, maxRotationAngle);
+        //}
+
+        //float newRotationZ = Mathf.LerpAngle(currentRotationZ, targetRotationZ, rotationSpeed * Time.fixedDeltaTime);
+        //transform.rotation = Quaternion.Euler(0f, 0f, newRotationZ);
+    }
+    private void LateUpdate()
+    {
+        //camBrain.ManualUpdate();
+    }
+    void PerformRotation()
+    {
         //float currentRotation = Mathf.Repeat(transform.rotation.eulerAngles.z, 360f);
         float currentRotation;
         // Calculate target rotation based on thrusters
@@ -188,7 +252,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if ((playerStats.currentEnergy >= (playerStats.GetMaxEnergy() * playerStats.GetAuxillaryEnergyThreshold())) && !energyRecharged)
         {
-            Debug.Log("In range to set energy to max");
+            //Debug.Log("In range to set energy to max");
             playerStats.StopEnergyBarLerpBack();
             playerStats.currentEnergy = playerStats.GetMaxEnergy();
         }
@@ -200,5 +264,48 @@ public class PlayerMovement : MonoBehaviour
     public bool GetThrusterStatus()
     {
         return thrustersRecharged;
+    }
+    float NormalizeAngle(float angle)
+    {
+        while (angle > 180f) angle -= 360f;
+        while (angle < -180f) angle += 360f;
+        return angle;
+    }
+    public void ManuallyUpdateCamera()
+    {
+        camBrain.ManualUpdate();
+    }
+    IEnumerator ManuallyUpdateCameraCoroutine()
+    {
+        while (isLeftThrusterActive || isRightThrusterActive || isUpThrusterActive || isShieldActive || lg.isFiring)
+        {
+            camBrain.ManualUpdate();
+            yield return null;
+        }
+        camUpdateCoroutine = null;
+    }
+
+    IEnumerator RotationCoroutine()
+    {
+        while (isRotating)
+        {
+            float currentRotationZ = NormalizeAngle(transform.rotation.eulerAngles.z);
+            float targetRotationZ = defaultRotationAngle;
+
+            // ... [The rest of the rotation logic remains the same]
+            if (isLeftThrusterActive && !isRightThrusterActive)
+            {
+                targetRotationZ = Mathf.Clamp(currentRotationZ - rotationSpeed, -maxRotationAngle, maxRotationAngle);
+            }
+            else if (isRightThrusterActive && !isLeftThrusterActive)
+            {
+                targetRotationZ = Mathf.Clamp(currentRotationZ + rotationSpeed, -maxRotationAngle, maxRotationAngle);
+            }
+            float newRotationZ = Mathf.LerpAngle(currentRotationZ, targetRotationZ, rotationSpeed * Time.fixedDeltaTime);
+            transform.rotation = Quaternion.Euler(0f, 0f, newRotationZ);
+            //camBrain.ManualUpdate();
+            yield return null;
+        }
+        
     }
 }
