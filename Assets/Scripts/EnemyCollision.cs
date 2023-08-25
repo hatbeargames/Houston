@@ -16,11 +16,15 @@ public class EnemyCollision : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("Enemy collided with: " + other.gameObject.name + " with layer: " + LayerMask.LayerToName(other.gameObject.layer));
+        //Debug.Log("Enemy collided with: " + other.gameObject.name + " with layer: " + LayerMask.LayerToName(other.gameObject.layer));
         HandleCollision(other);
         if (other.gameObject.layer == LayerMask.NameToLayer("Laser"))
         {
             damageCoroutine = StartCoroutine(ContinuousDamage(laserDamage));
+        }
+        else if (other.gameObject.layer == LayerMask.NameToLayer("shield"))
+        {
+            damageCoroutine = StartCoroutine(ContinuousDamage(shieldDamage));
         }
         // Add similar code for other continuous damage sources if needed
     }
@@ -32,11 +36,25 @@ public class EnemyCollision : MonoBehaviour
             StopCoroutine(damageCoroutine);
             damageCoroutine = null;
         }
+        if (other.gameObject.layer == LayerMask.NameToLayer("shield") && damageCoroutine != null)
+        {
+            StopCoroutine(damageCoroutine);
+            damageCoroutine = null;
+        }
         // Add similar code for other continuous damage sources if needed
     }
     private void OnCollisionEnter2D(Collision2D other)
     {
-        Debug.Log("Enemy collided with: " + other.gameObject.name + " with layer: " + LayerMask.LayerToName(other.gameObject.layer));
+        HandleCollision(other.collider);
+        if (other.gameObject.layer == LayerMask.NameToLayer("Laser"))
+        {
+            damageCoroutine = StartCoroutine(ContinuousDamage(laserDamage));
+        }
+        else if (other.gameObject.layer == LayerMask.NameToLayer("shield"))
+        {
+            damageCoroutine = StartCoroutine(ContinuousDamage(shieldDamage));
+        }
+        //Debug.Log("Enemy collided with: " + other.gameObject.name + " with layer: " + LayerMask.LayerToName(other.gameObject.layer));
     }
     private void HandleCollision(Collider2D other)
     {
@@ -44,7 +62,7 @@ public class EnemyCollision : MonoBehaviour
         switch (layerName)
         {
             case "Laser":
-                Debug.Log("Laser Hit enemy" + other.gameObject.name);
+                //Debug.Log("Laser Hit enemy" + other.gameObject.name);
                 enemyHealth.TakeDamage(laserDamage);
                 break;
 
@@ -66,7 +84,7 @@ public class EnemyCollision : MonoBehaviour
         while (true)
         {
             enemyHealth.TakeDamage(damageAmount);
-            yield return new WaitForSeconds(.1f);  // Wait for 1 second
+            yield return new WaitForSeconds(.01f);  // Wait for 1 second
         }
     }
 }

@@ -8,6 +8,7 @@ TagManager:
   - Thrusters
   - Enemy
   - SpawnPoints
+  - Ground
   layers:
   - Default
   - TransparentFX

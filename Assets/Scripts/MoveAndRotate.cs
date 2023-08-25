@@ -32,6 +32,15 @@ public class MoveAndRotate : MonoBehaviour
 
     void Start()
     {
+        GameObject[] foundSpawnPoints = GameObject.FindGameObjectsWithTag("SpawnPoints");
+        // Initialize the spawnPoints array with the same size as foundSpawnPoints
+       endObjects = new GameObject[foundSpawnPoints.Length];
+
+        // Populate the spawnPoints array with the SpawnObject component from each found spawn point
+        for (int i = 0; i < foundSpawnPoints.Length; i++)
+        {
+            endObjects[i] = foundSpawnPoints[i];
+        }
         // Set the startPoint to the object's current position
         startPoint = transform.position;
 
@@ -56,17 +65,20 @@ public class MoveAndRotate : MonoBehaviour
         startTime = Time.time;
     }
 
-    void Update()
+    void FixedUpdate()
     {
         // Calculate how far along the journey we are as a proportion of the total journey.
         float distCovered = (Time.time - startTime) * moveSpeed;
-        float fractionOfJourney = distCovered / journeyLength;
-
+        float fractionOfJourney = 0f;
+        if (journeyLength != 0f)
+        {
+            fractionOfJourney = distCovered / journeyLength;
+        }
         // Set our position as a proportion of the distance between the markers.
         rb.position = Vector2.Lerp(startPoint, endPoint, fractionOfJourney);
 
         // Rotate the object
-        rb.rotation += rotationSpeed * Time.deltaTime;
+        rb.rotation += rotationSpeed * Time.fixedDeltaTime;
     }
 }
 

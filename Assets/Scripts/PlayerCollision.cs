@@ -21,7 +21,7 @@ public class PlayerCollision : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("Player collided with: " + other.gameObject.name + " with tag: " + other.tag);
+        //Debug.Log("Player collided with: " + other.gameObject.name + " with tag: " + other.tag);
         // Check if the colliding object has the enemy tag. You can change "Enemy" to whatever tag your enemy objects have.
         if (other.CompareTag("Enemy"))
         {
@@ -33,6 +33,30 @@ public class PlayerCollision : MonoBehaviour
                     // Call the TakeDamage function from the PlayerStats script using the damage value from EnemyStats.
                     //playerStats.TakeDamage(enemyStats.damage);
                     damageCoroutine = StartCoroutine(ContinuousDamage(other));
+                }
+            }
+            else
+            {
+                Debug.LogError("EnemyStats component not found on " + other.gameObject.name);
+            }
+        }
+    }
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        
+        //Debug.Log("Player collided with: " + other.gameObject.name + " with tag: " + other.collider.tag);
+        // Check if the colliding object has the enemy tag. You can change "Enemy" to whatever tag your enemy objects have.
+        if (other.collider.CompareTag("Enemy"))
+        {
+            EnemyStats enemyStats = other.gameObject.GetComponent<EnemyStats>();
+            if (enemyStats != null)
+            {
+                if (!pm.GetShieldStatus())
+                {
+                    // Call the TakeDamage function from the PlayerStats script using the damage value from EnemyStats.
+                    //playerStats.TakeDamage(enemyStats.damage);
+                    damageCoroutine = StartCoroutine(ContinuousDamage(other.collider));
+                    enemyStats.DamageCoroutine = damageCoroutine;
                 }
             }
             else
@@ -68,6 +92,25 @@ public class PlayerCollision : MonoBehaviour
                 StopCoroutine(damageCoroutine);
                 damageCoroutine = null;  // Reset the reference
             }
+        }
+    }
+    private void OnCollisionExit2D(Collision2D other)
+    {
+        if (other.collider.CompareTag("Enemy"))
+        {
+            // If the player exits the enemy's trigger, stop the damage coroutine.
+            if (damageCoroutine != null)
+            {
+                StopCoroutine(damageCoroutine);
+                damageCoroutine = null;  // Reset the reference
+            }
+        }
+    }
+    public void StopSpecificCoroutine(Coroutine coroutineToStop)
+    {
+        if (coroutineToStop != null)
+        {
+            StopCoroutine(coroutineToStop);
         }
     }
 }

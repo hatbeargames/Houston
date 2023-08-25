@@ -9,7 +9,8 @@ public class PositionSync : MonoBehaviour
     {
         if (sourceParent != null && targetParent != null)
         {
-            targetParent.position = sourceParent.position;
+            Vector3 updatedPosition = new Vector3(sourceParent.position.x, sourceParent.position.y, 0);
+            targetParent.position = updatedPosition;
         }
     }
 }
