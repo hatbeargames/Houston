@@ -24,6 +24,11 @@ public class EnemyHealth : MonoBehaviour
     {
         if(currentHealth <= 0)
         {
+            var enemyStats = GetComponent<EnemyStats>();
+            if (enemyStats != null && enemyStats.DamageCoroutine != null)
+            {
+                GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerCollision>().StopSpecificCoroutine(enemyStats.DamageCoroutine);
+            }
             Destroy(this.gameObject);
         }
     }

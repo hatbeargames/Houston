@@ -74,13 +74,15 @@ public class PlayerCollision : MonoBehaviour
             yield break;  // Exit the coroutine if EnemyStats is not found
         }
 
-        while (true)
+        GameObject enemyGameObject = enemyStats.gameObject;
+        while (enemyGameObject != null && enemyGameObject.activeInHierarchy)
         {
             // Call the TakeDamage function from the PlayerStats script using the damage value from EnemyStats.
             playerStats.TakeDamage(enemyStats.damage);
             yield return new WaitForSeconds(1f);  // Wait for 1 second
         }
     }
+
 
     private void OnTriggerExit2D(Collider2D other)
     {
