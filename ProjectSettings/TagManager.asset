@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Energy
   - Thrusters
+  - Enemy
+  - SpawnPoints
   layers:
   - Default
   - TransparentFX
@@ -16,8 +18,8 @@ TagManager:
   - shield
   - Laser
   - Enemy
-  - 
-  - 
+  - Player
+  - Ground
   - 
   - 
   - 

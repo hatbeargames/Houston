@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] GameObject L_Thruster;
     [SerializeField] GameObject R_Thruster;
     [SerializeField] GameObject Shield;
+    [SerializeField] GameObject ShieldColliderObject;
     public PlayerStats playerStats;
 
     //PHYSICS VARIABLES
@@ -95,6 +96,7 @@ public class PlayerMovement : MonoBehaviour
             isShieldActive = false;
         }
         Shield.SetActive(isShieldActive);
+        ShieldColliderObject.GetComponent<CircleCollider2D>().enabled = isShieldActive;
         CheckEnergyStats();
         if (isShieldActive || lg.isFiring)
         {
@@ -197,6 +199,11 @@ public class PlayerMovement : MonoBehaviour
     {
         return energyRecharged;
     }
+    public bool GetShieldStatus()
+    {
+        return isShieldActive;
+    }
+
     public bool GetThrusterStatus()
     {
         return thrustersRecharged;

@@ -19,7 +19,7 @@ public class PlayerStats : MonoBehaviour
     public int currentHealth;
     public float currentThrusters;
     public float currentEnergy;
-    
+    public bool isDead = false;
 
     // Start is called before the first frame update
     void Start()
@@ -37,8 +37,12 @@ public class PlayerStats : MonoBehaviour
     // Update is called once per frame
     void Update()
     {   
+        if(currentHealth <= 0)
+        {
+            //Debug.Log("Is Dead");
+        }
     }
-    void TakeDamage(int dmg)
+    public void TakeDamage(int dmg)
     {
         currentHealth -= dmg;
         healthBar.SetBarValue(currentHealth);

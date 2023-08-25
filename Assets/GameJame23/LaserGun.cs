@@ -26,7 +26,7 @@ public class LaserGun : MonoBehaviour
         Vector2 mouseOnScreen = (Vector2)Camera.main.ScreenToViewportPoint(Input.mousePosition);
         float angle = AngleDelta(posOnScreen, mouseOnScreen) + offsetAngle;
         transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, angle));
-        laserCollider.points = new Vector2[2] { Vector2.zero, Vector2.zero };
+        laserCollider.points = new Vector2[2] { firePoint.transform.position, firePoint.transform.position };
     }
 
     // Update is called once per frame
@@ -34,7 +34,7 @@ public class LaserGun : MonoBehaviour
     {
         if (!isFiring)
         {
-            laserCollider.points = new Vector2[2] { Vector2.zero, Vector2.zero };
+            laserCollider.points = new Vector2[2] { firePoint.transform.position, firePoint.transform.position };
         }
         //Current coordinates of the laser Gun
         Vector2 posOnScreen = Camera.main.WorldToViewportPoint(transform.position);
@@ -88,9 +88,11 @@ public class LaserGun : MonoBehaviour
 
     void UpdateLaserCollider()
     {
-        Vector2 localStartPos = transform.InverseTransformPoint(firePoint.transform.position);
-        Vector2 localEndPos = transform.InverseTransformPoint(maxLaserDistance.transform.position);
-
-        laserCollider.points = new Vector2[2] { localStartPos, localEndPos };
+        //Inverse not needed when edge collider is not child of objects used.
+        //Vector2 localStartPos = transform.InverseTransformPoint(firePoint.transform.position);
+        //Vector2 localEndPos = transform.InverseTransformPoint(maxLaserDistance.transform.position);
+        //Debug.DrawLine(localStartPos, localEndPos, Color.red);
+        //Debug.DrawLine(firePoint.transform.position, maxLaserDistance.transform.position, Color.blue);
+        laserCollider.points = new Vector2[2] { firePoint.transform.position, maxLaserDistance.transform.position };
     }
 }
