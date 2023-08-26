@@ -142,17 +142,20 @@ public class PlayerStats : MonoBehaviour
     }
     public void AddToHealth(int healthPickup)
     {
-        currentHealth += healthPickup;
+        currentHealth = Mathf.Clamp(currentHealth + healthPickup, 0, startingHealth);
+        //currentHealth += healthPickup;
         healthBar.SetBarValue(currentHealth);
     }
     public void AddToEnergy(int energyPickup)
     {
-        currentEnergy += energyPickup;
+        currentEnergy = Mathf.Clamp(currentEnergy + energyPickup, 0, startingEnergy);
+        //currentEnergy += energyPickup;
         EnergyBar.SetBarValue(currentEnergy);
     }
     public void AddToThrusters(int fuelPickup)
     {
-        currentThrusters += fuelPickup;
+        currentThrusters = Mathf.Clamp(currentThrusters + fuelPickup, 0, startingThrusters);
+        //currentThrusters += fuelPickup;
         ThrusterBar.SetBarValue(currentThrusters);
     }
 }

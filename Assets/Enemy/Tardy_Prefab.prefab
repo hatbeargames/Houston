@@ -94,6 +94,7 @@ GameObject:
   - component: {fileID: 9064388920443419415}
   - component: {fileID: 8001473793158350896}
   - component: {fileID: -1925305984769028285}
+  - component: {fileID: -6395842427323527185}
   m_Layer: 8
   m_Name: Tardy_Prefab
   m_TagString: Enemy
@@ -161,6 +162,9 @@ MonoBehaviour:
   startingHealth: 100
   currentHealth: 0
   healthBar: {fileID: 8227983098907027579}
+  cts: {fileID: 0}
+  minChance: 0
+  maxChance: 20
 --- !u!114 &8227983097639280600
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -252,6 +256,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minScale: 1
   maxScale: 3
+--- !u!114 &-6395842427323527185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8227983097639280603}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a41f4168b8bda8942a6bfb24e5641721, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabs:
+  - {fileID: 3849457939631606139, guid: 2d0231339e907874bbae15b3463fcc56, type: 3}
+  - {fileID: 4697527647616685706, guid: aa07b79d91d7f8f4ea69a9d1ca5d4e01, type: 3}
+  - {fileID: 7741382850071728822, guid: be0f445d4700f3d41bd090159d111eb1, type: 3}
+  spawnChance: 0
 --- !u!1 &8227983097655165281
 GameObject:
   m_ObjectHideFlags: 0

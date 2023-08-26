@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 1297186442630330577}
   - component: {fileID: -1847478877078406947}
   - component: {fileID: -3818307859258486289}
+  - component: {fileID: 4328606402296628485}
   m_Layer: 8
   m_Name: Worm_Prefab
   m_TagString: Enemy
@@ -85,6 +86,9 @@ MonoBehaviour:
   startingHealth: 100
   currentHealth: 0
   healthBar: {fileID: 6608850217661459238}
+  cts: {fileID: 0}
+  minChance: 0
+  maxChance: 45
 --- !u!114 &6608850215698677250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -196,6 +200,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minScale: 1
   maxScale: 3
+--- !u!114 &4328606402296628485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6608850215698677260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a41f4168b8bda8942a6bfb24e5641721, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabs:
+  - {fileID: 7741382850071728822, guid: be0f445d4700f3d41bd090159d111eb1, type: 3}
+  - {fileID: 4697527647616685706, guid: aa07b79d91d7f8f4ea69a9d1ca5d4e01, type: 3}
+  - {fileID: 3849457939631606139, guid: 2d0231339e907874bbae15b3463fcc56, type: 3}
+  spawnChance: 0
 --- !u!1 &6608850216105950142
 GameObject:
   m_ObjectHideFlags: 0

@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 1978454170384261697}
   - component: {fileID: -464459363283187145}
   - component: {fileID: 3776200114152840347}
+  - component: {fileID: 4451790774399927560}
   m_Layer: 8
   m_Name: Bat_Prefab
   m_TagString: Enemy
@@ -70,6 +71,9 @@ MonoBehaviour:
   startingHealth: 100
   currentHealth: 0
   healthBar: {fileID: 2100963522454250631}
+  cts: {fileID: 0}
+  minChance: 0
+  maxChance: 20
 --- !u!58 &2100963521950250938
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -161,6 +165,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minScale: 1
   maxScale: 2
+--- !u!114 &4451790774399927560
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100963521950250918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a41f4168b8bda8942a6bfb24e5641721, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabs:
+  - {fileID: 4697527647616685706, guid: aa07b79d91d7f8f4ea69a9d1ca5d4e01, type: 3}
+  - {fileID: 3849457939631606139, guid: 2d0231339e907874bbae15b3463fcc56, type: 3}
+  - {fileID: 7741382850071728822, guid: be0f445d4700f3d41bd090159d111eb1, type: 3}
+  spawnChance: 0
 --- !u!1 &2100963522194233665
 GameObject:
   m_ObjectHideFlags: 0
