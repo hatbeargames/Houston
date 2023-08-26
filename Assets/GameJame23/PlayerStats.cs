@@ -13,14 +13,15 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] StatsBarScript EnergyBar;
     [SerializeField] LerpBackToMax thrusterLerpScript;
     [SerializeField] LerpBackToMax energyLerpScript;
-    [SerializeField] float AuxillaryEnergyThreshold = .99f;
-    [SerializeField] float AuxillaryThrusterThreshold = .99f;
+    [SerializeField] float AuxillaryEnergyThreshold = .9f;
+    [SerializeField] float AuxillaryThrusterThreshold = .9f;
+    [SerializeField] float altitude;
+    [SerializeField] float speed;
     //PUBLIC INTS FOR CHECKING
     public int currentHealth;
     public float currentThrusters;
     public float currentEnergy;
     public bool isDead = false;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -33,13 +34,16 @@ public class PlayerStats : MonoBehaviour
         thrusterLerpScript = ThrusterBar.GetComponent<LerpBackToMax>();
         energyLerpScript = EnergyBar.GetComponent<LerpBackToMax>();
     }
-
+    
     // Update is called once per frame
     void Update()
     {   
-        if(currentHealth <= 0)
+        if(currentHealth <= 0 || currentThrusters <= 0)
         {
-            //Debug.Log("Is Dead");
+            Debug.Log("Is Dead");
+            isDead = true;
+            StopThrusterBarLerpBack();
+            StopEnergyBarLerpBack();
         }
     }
     public void TakeDamage(int dmg)
@@ -66,6 +70,10 @@ public class PlayerStats : MonoBehaviour
     public float GetMaxEnergy()
     {
         return startingEnergy;
+    }
+    public float GetMaxHealth()
+    {
+        return startingHealth;
     }
     public void ConsumeThrusters(float amount)
     {
@@ -103,5 +111,21 @@ public class PlayerStats : MonoBehaviour
     public float GetAuxillaryThrusterThreshold()
     {
         return AuxillaryThrusterThreshold;
+    }
+    public void SetAltitude(float alt)
+    {
+        altitude = alt;
+    }
+    public void SetSpeed(float sped)
+    {
+        speed = sped;
+    }
+    public float GetAltitude()
+    {
+        return altitude;
+    }
+    public float GetSpeed()
+    {
+        return speed;
     }
 }

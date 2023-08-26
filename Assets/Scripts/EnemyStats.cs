@@ -16,8 +16,11 @@ public class EnemyStats : MonoBehaviour
     {
         if (DamageCoroutine != null)
         {
-            playerCollision.StopSpecificCoroutine(DamageCoroutine);
-            DamageCoroutine = null;
+            if (playerCollision != null)
+            {
+                playerCollision.StopSpecificCoroutine(DamageCoroutine);
+                DamageCoroutine = null;
+            }
         }
     }
 

@@ -16,6 +16,8 @@ GameObject:
   - component: {fileID: 6608850215698677255}
   - component: {fileID: 6608850215698677254}
   - component: {fileID: 1297186442630330577}
+  - component: {fileID: -1847478877078406947}
+  - component: {fileID: -3818307859258486289}
   m_Layer: 8
   m_Name: Worm_Prefab
   m_TagString: Enemy
@@ -167,6 +169,33 @@ Rigidbody2D:
   m_SleepingMode: 0
   m_CollisionDetection: 1
   m_Constraints: 0
+--- !u!114 &-1847478877078406947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6608850215698677260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: baaaf19d522dc294ea2a3143ded2c64d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxDistance: 100
+--- !u!114 &-3818307859258486289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6608850215698677260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8246d5decb5c1a41a1d77dff3c36871, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minScale: 1
+  maxScale: 3
 --- !u!1 &6608850216105950142
 GameObject:
   m_ObjectHideFlags: 0

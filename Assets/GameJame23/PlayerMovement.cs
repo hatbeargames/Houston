@@ -19,9 +19,9 @@ public class PlayerMovement : MonoBehaviour
     private Quaternion targetRotation;
     public float maxRotationAngle = 45f;
     public float defaultRotationAngle = 0f;
-    private float gravityMultiplier = 1.0f;
+    public float gravityMultiplier = 1.0f;
     public float gravityIncreaseRate = 0.1f; // Adjust how quickly you want gravity to increase
-    public float maxGravityMultiplier = 5.0f;
+    public float maxGravityMultiplier = 1f;
     public Rigidbody2D rb;
     public float moveSpeed = 5f;
     public float minVerticalSpeed = -10f;  // Adjust as needed for max fall speed
@@ -41,7 +41,7 @@ public class PlayerMovement : MonoBehaviour
     Vector2 moveDirection = Vector2.zero;
     public InputAction playerControls;
     LaserGun lg;
-
+    public float verticalVelocity;
     private void OnEnable()
     {
         playerControls.Enable();
@@ -138,18 +138,44 @@ public class PlayerMovement : MonoBehaviour
                 wereThrustersActive = false;
             }
             gravityMultiplier += gravityIncreaseRate * Time.deltaTime;
-            gravityMultiplier = Mathf.Clamp(gravityMultiplier, 1.0f, maxGravityMultiplier);
+            gravityMultiplier = Mathf.Clamp(gravityMultiplier, -1f, maxGravityMultiplier);
         }
     }
     private void FixedUpdate()
     {
-        
+
         //Calculate and clamp the vertical velocity so it doesn't compound.
-        float verticalVelocity = moveDirection.y * moveSpeed + rb.velocity.y * gravityMultiplier;
+        verticalVelocity = moveDirection.y * moveSpeed + rb.velocity.y * gravityMultiplier;
         verticalVelocity = Mathf.Clamp(verticalVelocity, minVerticalSpeed, maxVerticalSpeed);
+
+        //float verticalVelocity = rb.velocity.y - gravityMultiplier;
+        //verticalVelocity = rb.velocity.y - (moveDirection.y * moveSpeed * gravityMultiplier);
+        //if(rb.velocity.y > 0) 
+        //{
+        //    verticalVelocity = moveDirection.y * moveSpeed + rb.velocity.y * gravityMultiplier;
+        //    verticalVelocity = Mathf.Clamp(verticalVelocity, minVerticalSpeed, maxVerticalSpeed);
+        //}
+        //else if(rb.velocity.y < 0) 
+        //{
+        //    //should not apply movespeed or moveDirection to the falling velocity.
+        //    verticalVelocity = rb.velocity.y * gravityMultiplier;
+        //    verticalVelocity = Mathf.Clamp(verticalVelocity, minVerticalSpeed, maxVerticalSpeed);
+        //}
+        //else
+        //{
+        //    verticalVelocity = moveDirection.y * moveSpeed + rb.velocity.y * gravityMultiplier;
+        //    verticalVelocity = Mathf.Clamp(verticalVelocity, minVerticalSpeed, maxVerticalSpeed);
+        //}
+
         if ((isUpThrusterActive || isRightThrusterActive || isLeftThrusterActive) && thrustersRecharged)
         {
+            //Debug.Log("Applying Velocity");
             rb.velocity = new Vector2(moveDirection.x * moveSpeed, verticalVelocity);
+            //rb.velocity = new Vector2(moveDirection.x * moveSpeed, Mathf.Clamp((moveDirection.y * moveSpeed + rb.velocity.y * gravityMultiplier), minVerticalSpeed, maxVerticalSpeed));
+        }
+        else if (!playerStats.isDead)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, verticalVelocity);
         }
         //float currentRotation = Mathf.Repeat(transform.rotation.eulerAngles.z, 360f);
         float currentRotation;
@@ -184,6 +210,7 @@ public class PlayerMovement : MonoBehaviour
             //Debug.Log("In range to set thrusters to max");
             playerStats.StopThrusterBarLerpBack();
             playerStats.currentThrusters = playerStats.GetMaxThrust();
+            energyRecharged = true;
         }
     }
     void CheckEnergyStats()
@@ -193,6 +220,7 @@ public class PlayerMovement : MonoBehaviour
             Debug.Log("In range to set energy to max");
             playerStats.StopEnergyBarLerpBack();
             playerStats.currentEnergy = playerStats.GetMaxEnergy();
+            energyRecharged = true;
         }
     }
     public bool GetEnergyStatus()

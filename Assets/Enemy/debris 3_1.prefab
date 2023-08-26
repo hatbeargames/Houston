@@ -15,6 +15,8 @@ GameObject:
   - component: {fileID: 5195898582569518005}
   - component: {fileID: 5195898582569518004}
   - component: {fileID: 5195898582569518003}
+  - component: {fileID: 9188307898963137332}
+  - component: {fileID: 9084331041517653663}
   m_Layer: 8
   m_Name: debris 3_1
   m_TagString: Enemy
@@ -189,3 +191,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65d56f9e6fcc354499447fd9203c00a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &9188307898963137332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5195898582569518000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: baaaf19d522dc294ea2a3143ded2c64d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxDistance: 100
+--- !u!114 &9084331041517653663
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5195898582569518000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8246d5decb5c1a41a1d77dff3c36871, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minScale: 1
+  maxScale: 3

@@ -15,6 +15,8 @@ GameObject:
   - component: {fileID: 6114643819456410735}
   - component: {fileID: 6114643819456410720}
   - component: {fileID: 6114643819456410721}
+  - component: {fileID: -900337357444699803}
+  - component: {fileID: -2778338130915231955}
   m_Layer: 8
   m_Name: rock3_1
   m_TagString: Enemy
@@ -198,3 +200,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65d56f9e6fcc354499447fd9203c00a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-900337357444699803
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6114643819456410724}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: baaaf19d522dc294ea2a3143ded2c64d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxDistance: 100
+--- !u!114 &-2778338130915231955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6114643819456410724}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8246d5decb5c1a41a1d77dff3c36871, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minScale: 1
+  maxScale: 5
