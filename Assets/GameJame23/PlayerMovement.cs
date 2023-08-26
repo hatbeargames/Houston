@@ -75,7 +75,7 @@ public class PlayerMovement : MonoBehaviour
         {
             isLeftThrusterActive = Input.GetKey(KeyCode.D);
             isRightThrusterActive = Input.GetKey(KeyCode.A);
-            isUpThrusterActive = Input.GetKey(KeyCode.W);
+            isUpThrusterActive = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.Space);
         }
         else
         {
@@ -121,7 +121,8 @@ public class PlayerMovement : MonoBehaviour
                 wasEnergyUsed = false;
             }
         }
-        if (isLeftThrusterActive || isRightThrusterActive || isUpThrusterActive)
+        //if (isLeftThrusterActive || isRightThrusterActive || isUpThrusterActive)
+        if (isUpThrusterActive)
         {
             if (!wereThrustersActive) // This means the thrusters were just activated
             {

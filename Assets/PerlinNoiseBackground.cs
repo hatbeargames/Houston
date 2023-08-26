@@ -10,28 +10,38 @@ public class PerlinNoiseBackground : MonoBehaviour
     private MeshRenderer _meshRenderer;
     public Transform character; // Assign your character's transform here
     private Vector2 initialOffset;
+
+    // The boolean to determine if we should generate and apply the Perlin noise texture
+    public bool applyPerlinNoise = true;
+
     private void Start()
     {
         character = GameObject.Find("SpaceCraft").transform;
         _meshRenderer = GetComponent<MeshRenderer>();
         initialOffset = new Vector2(character.position.x, character.position.y);
-        // Generate the tileable texture
-        int textureWidth = Mathf.NextPowerOfTwo(Screen.width);
-        int textureHeight = Mathf.NextPowerOfTwo(Screen.height);
-        Texture2D texture = GenerateTileablePerlinNoiseTexture(textureWidth, textureHeight, new Color[] { color1, color2 });
 
-        // Assign the generated texture to the material of the MeshRenderer
-        if (_meshRenderer.materials.Length > 0)
+        if (applyPerlinNoise)
         {
-            _meshRenderer.materials[0].mainTexture = texture;
-            _meshRenderer.materials[0].mainTextureScale = new Vector2(Screen.width / (float)textureWidth, Screen.height / (float)textureHeight);
+            // Generate the tileable texture
+            int textureWidth = Mathf.NextPowerOfTwo(Screen.width);
+            int textureHeight = Mathf.NextPowerOfTwo(Screen.height);
+            Texture2D texture = GenerateTileablePerlinNoiseTexture(textureWidth, textureHeight, new Color[] { color1, color2 });
+
+            // Assign the generated texture to the material of the MeshRenderer
+            if (_meshRenderer.materials.Length > 0)
+            {
+                _meshRenderer.materials[0].mainTexture = texture;
+                _meshRenderer.materials[0].mainTextureScale = new Vector2(Screen.width / (float)textureWidth, Screen.height / (float)textureHeight);
+            }
         }
     }
+
     private void Update()
     {
         Vector2 movement = (new Vector2(character.position.x, character.position.y) - initialOffset) * scrollSpeed;
         _meshRenderer.materials[0].mainTextureOffset = movement;
     }
+
     private Texture2D GenerateTileablePerlinNoiseTexture(int width, int height, Color[] colors)
     {
         Texture2D texture = new Texture2D(width, height);
@@ -62,6 +72,4 @@ public class PerlinNoiseBackground : MonoBehaviour
         texture.Apply();
         return texture;
     }
-
-
 }

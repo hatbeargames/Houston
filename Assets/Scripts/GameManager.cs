@@ -14,14 +14,18 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject tutorialZone;
     [SerializeField] private GameObject dialogueBox;
     [SerializeField] private GameObject spawnPoints;
-    
+    [SerializeField] private GameObject burnUp;
 
     private PlayerMovement playerMovement;
     private PlayerStats playerStats;
     private float playerSpeed;
+    private float TooFastThreshold = 140;
     private float distanceToGoal = 20000;
     private bool tutorialCleared = false;
     private bool spawnEnabled = false;
+    public int BurnDamage;
+    private bool burningUp;
+
     void Start()
     {
         playerMovement = player.GetComponent<PlayerMovement>();
@@ -30,6 +34,17 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        CheckSpeed();
+        burnUp.SetActive(burningUp);
+        if (burningUp && !IsInvoking("DealBurningDamage"))
+        {
+            InvokeRepeating("DealBurningDamage", 0, 1.0f);
+        }
+        else if (!burningUp)
+        {
+            CancelInvoke("DealBurningDamage"); // If burningUp becomes false, stop the repeating method
+        }
+
         if (!tutorialCleared)
         {
             TutorialCheck();
@@ -84,5 +99,14 @@ public class GameManager : MonoBehaviour
     {
         spawnPoints.SetActive(true);
         spawnEnabled = true;
+    }
+    private void CheckSpeed()
+    {
+        burningUp = (playerSpeed >= TooFastThreshold);
+    }
+    // This method will be invoked repeatedly to deal burning damage
+    void DealBurningDamage()
+    {
+        playerStats.TakeDamage(BurnDamage);
     }
 }
