@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour
             GameOverCheck();
         }
         PlayerStatCheck();
-        Debug.Log("Speed" + playerSpeed + ", Altitude" + distanceToGoal);
+        //Debug.Log("Speed" + playerSpeed + ", Altitude" + distanceToGoal);
     }
 
     void GameOverCheck()

@@ -40,10 +40,22 @@ public class PlayerStats : MonoBehaviour
     {   
         if(currentHealth <= 0 || currentThrusters <= 0)
         {
-            Debug.Log("Is Dead");
+            //Debug.Log("Is Dead");
             isDead = true;
             StopThrusterBarLerpBack();
             StopEnergyBarLerpBack();
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            TakeDamage(20);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            TakeEnergyDamage(20);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            TakeThrusterDamage(20);
         }
     }
     public void TakeDamage(int dmg)
@@ -127,5 +139,20 @@ public class PlayerStats : MonoBehaviour
     public float GetSpeed()
     {
         return speed;
+    }
+    public void AddToHealth(int healthPickup)
+    {
+        currentHealth += healthPickup;
+        healthBar.SetBarValue(currentHealth);
+    }
+    public void AddToEnergy(int energyPickup)
+    {
+        currentEnergy += energyPickup;
+        EnergyBar.SetBarValue(currentEnergy);
+    }
+    public void AddToThrusters(int fuelPickup)
+    {
+        currentThrusters += fuelPickup;
+        ThrusterBar.SetBarValue(currentThrusters);
     }
 }
