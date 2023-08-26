@@ -11,12 +11,17 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject thrusterBarCritical;
     [SerializeField] private GameObject energyBarCritical;
     [SerializeField] private float WarningThreshold = .25f;
+    [SerializeField] private GameObject tutorialZone;
+    [SerializeField] private GameObject dialogueBox;
+    [SerializeField] private GameObject spawnPoints;
+    
 
     private PlayerMovement playerMovement;
     private PlayerStats playerStats;
     private float playerSpeed;
-    private float distanceToGoal;
-
+    private float distanceToGoal = 20000;
+    private bool tutorialCleared = false;
+    private bool spawnEnabled = false;
     void Start()
     {
         playerMovement = player.GetComponent<PlayerMovement>();
@@ -25,6 +30,13 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        if (!tutorialCleared)
+        {
+            TutorialCheck();
+        } else if(!spawnEnabled)
+        {
+            EnableSpawnPoint();
+        }
         if (!GG)
         {
             GameOverCheck();
@@ -53,5 +65,24 @@ public class GameManager : MonoBehaviour
     public void SetDistanceToGoal(int dist)
     {
         distanceToGoal = dist;
+    }
+    private void ClearTutorialArea()
+    {
+        tutorialZone.SetActive(false);
+        
+        tutorialCleared = true;
+        Debug.Log("ClearingTutorialArea");
+    }
+    private void TutorialCheck()
+    {
+        if (distanceToGoal <= 19800 && !dialogueBox.activeSelf)
+        {
+            ClearTutorialArea();
+        }
+    }
+    private void EnableSpawnPoint()
+    {
+        spawnPoints.SetActive(true);
+        spawnEnabled = true;
     }
 }
