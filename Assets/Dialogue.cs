@@ -68,7 +68,7 @@ public class Dialogue : MonoBehaviour
         else
         {
             hatch.SetActive(false);
-            controlsUI.SetActive(false);
+            //controlsUI.SetActive(false);
             gameObject.SetActive(false);
         }
     }

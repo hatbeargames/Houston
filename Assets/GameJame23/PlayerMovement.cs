@@ -10,14 +10,18 @@ public class PlayerMovement : MonoBehaviour
     //GAMEOBJECTS
     [SerializeField] GameObject L_Thruster;
     [SerializeField] GameObject R_Thruster;
+    [SerializeField] GameObject L_Dash_Thruster;
+    [SerializeField] GameObject R_Dash_Thruster;
     [SerializeField] GameObject Shield;
     [SerializeField] GameObject ShieldColliderObject;
     public PlayerStats playerStats;
+    private CircleCollider2D shieldCollider;
 
     //PHYSICS VARIABLES
     public float rotationSpeed = 10f; // Adjust the rotation speed as needed
     private Quaternion targetRotation;
     public float maxRotationAngle = 45f;
+    public float defaultRotationSpeed;
     public float defaultRotationAngle = 0f;
     public float gravityMultiplier = 1.0f;
     public float gravityIncreaseRate = 0.1f; // Adjust how quickly you want gravity to increase
@@ -38,10 +42,20 @@ public class PlayerMovement : MonoBehaviour
     private bool wereThrustersActive = false;
     bool thrustersRecharged = true;
     bool energyRecharged = true;
+    private bool isFloating = false;  // Starts as false since player is not floating initially
+
     Vector2 moveDirection = Vector2.zero;
     public InputAction playerControls;
     LaserGun lg;
     public float verticalVelocity;
+    public float dashSpeed = 100f;
+    public float dashDuration = 3f;
+    public float maxTimeBetweenTaps = 0.3f; // Time allowed between double taps
+    private float lastTapTimeLeft = 0f;
+    private float lastTapTimeRight = 0f;
+    private bool isDashing = false;
+
+
     private void OnEnable()
     {
         playerControls.Enable();
@@ -55,12 +69,19 @@ public class PlayerMovement : MonoBehaviour
     {
         playerStats = FindObjectOfType<PlayerStats>();
         lg = FindObjectOfType<LaserGun>();
+        defaultRotationSpeed = rotationSpeed;
+        shieldCollider = ShieldColliderObject.GetComponent<CircleCollider2D>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(playerStats.currentThrusters == playerStats.GetMaxThrust())
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            ToggleFloating();
+        }
+
+        if (playerStats.currentThrusters == playerStats.GetMaxThrust())
         {
             thrustersRecharged = true;
         }
@@ -70,6 +91,10 @@ public class PlayerMovement : MonoBehaviour
             energyRecharged = true;
         }
         CheckThrusterStats();
+        if (isDashing && !(Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)))
+        {
+            isDashing = false;
+        }
         moveDirection = playerControls.ReadValue<Vector2>();
         if (playerStats.currentThrusters > 0 && thrustersRecharged)
         {
@@ -84,8 +109,8 @@ public class PlayerMovement : MonoBehaviour
             isRightThrusterActive = false;
             isUpThrusterActive = false;
         }
-        L_Thruster.SetActive(isUpThrusterActive || isLeftThrusterActive);
-        R_Thruster.SetActive(isUpThrusterActive || isRightThrusterActive);
+        L_Thruster.SetActive(isUpThrusterActive || isLeftThrusterActive || isFloating);
+        R_Thruster.SetActive(isUpThrusterActive || isRightThrusterActive || isFloating);
         if (playerStats.currentEnergy > 0)
         {
             isShieldActive = Input.GetMouseButton(1);
@@ -96,7 +121,7 @@ public class PlayerMovement : MonoBehaviour
             isShieldActive = false;
         }
         Shield.SetActive(isShieldActive);
-        ShieldColliderObject.GetComponent<CircleCollider2D>().enabled = isShieldActive;
+        shieldCollider.enabled = isShieldActive;
         CheckEnergyStats();
         if (isShieldActive || lg.isFiring)
         {
@@ -122,7 +147,7 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         //if (isLeftThrusterActive || isRightThrusterActive || isUpThrusterActive)
-        if (isUpThrusterActive)
+        if (isUpThrusterActive || isDashing )
         {
             if (!wereThrustersActive) // This means the thrusters were just activated
             {
@@ -138,8 +163,51 @@ public class PlayerMovement : MonoBehaviour
             {
                 wereThrustersActive = false;
             }
-            gravityMultiplier += gravityIncreaseRate * Time.deltaTime;
+            //Original Gravity multiplie
+            //gravityMultiplier += gravityIncreaseRate * Time.deltaTime;
+
+            //Sam as above but includes the floating check
+            if (!isFloating)
+            {
+                gravityMultiplier += gravityIncreaseRate * Time.deltaTime;
+                
+            }
+            else
+            {
+                gravityMultiplier = 0f;  // No gravity applied when floating
+                playerStats.ConsumeThrusters(thrusterConsumptionRate * Time.deltaTime);
+            }
             gravityMultiplier = Mathf.Clamp(gravityMultiplier, -1f, maxGravityMultiplier);
+        }
+
+        // Double tap detection for left (A key)
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            if (Time.time - lastTapTimeLeft < maxTimeBetweenTaps)
+            {
+                rotationSpeed = rotationSpeed * 2;
+                StartCoroutine(Dash(-Vector2.right,L_Dash_Thruster));  // Negative for left direction
+            }
+            else
+            {
+                rotationSpeed = defaultRotationSpeed;
+            }
+            lastTapTimeLeft = Time.time;
+        }
+
+        // Double tap detection for right (D key)
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            if (Time.time - lastTapTimeRight < maxTimeBetweenTaps)
+            {
+                rotationSpeed = rotationSpeed * 2;
+                StartCoroutine(Dash(Vector2.right,R_Dash_Thruster));   // Positive for right direction
+            }
+            else
+            {
+                rotationSpeed = defaultRotationSpeed;
+            }
+            lastTapTimeRight = Time.time;
         }
     }
     private void FixedUpdate()
@@ -148,7 +216,7 @@ public class PlayerMovement : MonoBehaviour
         //Calculate and clamp the vertical velocity so it doesn't compound.
         verticalVelocity = moveDirection.y * moveSpeed + rb.velocity.y * gravityMultiplier;
         verticalVelocity = Mathf.Clamp(verticalVelocity, minVerticalSpeed, maxVerticalSpeed);
-
+        #region Original Velocity and rotation code
         //float verticalVelocity = rb.velocity.y - gravityMultiplier;
         //verticalVelocity = rb.velocity.y - (moveDirection.y * moveSpeed * gravityMultiplier);
         //if(rb.velocity.y > 0) 
@@ -167,20 +235,71 @@ public class PlayerMovement : MonoBehaviour
         //    verticalVelocity = moveDirection.y * moveSpeed + rb.velocity.y * gravityMultiplier;
         //    verticalVelocity = Mathf.Clamp(verticalVelocity, minVerticalSpeed, maxVerticalSpeed);
         //}
+        #endregion
 
-        if ((isUpThrusterActive || isRightThrusterActive || isLeftThrusterActive) && thrustersRecharged)
+        #region v2 velocity and rotation code
+        ////Needed at the beginning of the various velocity components.
+        //if (isDashing)
+        //{
+        //    // If the player is dashing, we don't need to apply other forces or checks.
+        //    // This will be set by the Dash coroutine
+        //} else if ((isUpThrusterActive || isRightThrusterActive || isLeftThrusterActive) && thrustersRecharged)
+        //{
+        //    //Debug.Log("Applying Velocity");
+        //    rb.velocity = new Vector2(moveDirection.x * moveSpeed, verticalVelocity);
+        //    //rb.velocity = new Vector2(moveDirection.x * moveSpeed, Mathf.Clamp((moveDirection.y * moveSpeed + rb.velocity.y * gravityMultiplier), minVerticalSpeed, maxVerticalSpeed));
+        //}
+        //else if (!playerStats.isDead)
+        //{
+        //    rb.velocity = new Vector2(rb.velocity.x, verticalVelocity);
+        //}
+        ////float currentRotation = Mathf.Repeat(transform.rotation.eulerAngles.z, 360f);
+        //float currentRotation;
+        //// Calculate target rotation based on thrusters
+        //if (isUpThrusterActive && !isRightThrusterActive && !isLeftThrusterActive)
+        //{
+        //    targetRotation = Quaternion.Euler(0f, 0f, defaultRotationAngle);
+        //}
+        //else if (isLeftThrusterActive && !isRightThrusterActive)
+        //{
+        //    currentRotation = Mathf.Repeat(transform.rotation.eulerAngles.z, -360f);
+        //    float targetRotationFloat = currentRotation - rotationSpeed;
+        //    targetRotation = Quaternion.Euler(0f, 0f, Mathf.Clamp(targetRotationFloat, -maxRotationAngle, maxRotationAngle));
+        //}
+        //else if (isRightThrusterActive && !isLeftThrusterActive)
+        //{
+        //    currentRotation = Mathf.Repeat(transform.rotation.eulerAngles.z, 360f);
+        //    float targetRotationFloat = currentRotation + rotationSpeed;
+        //    targetRotation = Quaternion.Euler(0f, 0f, Mathf.Clamp(targetRotationFloat, (-1 * maxRotationAngle), maxRotationAngle));
+        //}
+        //else
+        //{
+        //    targetRotation = Quaternion.Euler(0f, 0f, defaultRotationAngle);
+        //}
+
+        //transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        #endregion
+
+        #region v3 velocity and rotation code
+        //Calculate and clamp the vertical velocity so it doesn't compound.
+        verticalVelocity = moveDirection.y * moveSpeed + rb.velocity.y * gravityMultiplier;
+        verticalVelocity = Mathf.Clamp(verticalVelocity, minVerticalSpeed, maxVerticalSpeed);
+
+        // If player is not dashing, apply standard horizontal velocity.
+        if (!isDashing)
         {
-            //Debug.Log("Applying Velocity");
-            rb.velocity = new Vector2(moveDirection.x * moveSpeed, verticalVelocity);
-            //rb.velocity = new Vector2(moveDirection.x * moveSpeed, Mathf.Clamp((moveDirection.y * moveSpeed + rb.velocity.y * gravityMultiplier), minVerticalSpeed, maxVerticalSpeed));
+            rb.velocity = new Vector2(moveDirection.x * moveSpeed, rb.velocity.y);
         }
-        else if (!playerStats.isDead)
+        // Otherwise, dashing velocity is set in the coroutine.
+
+        // If the up thruster is active or the player is not dead, adjust vertical velocity.
+        if (isUpThrusterActive || !playerStats.isDead)
         {
             rb.velocity = new Vector2(rb.velocity.x, verticalVelocity);
         }
-        //float currentRotation = Mathf.Repeat(transform.rotation.eulerAngles.z, 360f);
+
+        // Handling rotation based on thrusters
         float currentRotation;
-        // Calculate target rotation based on thrusters
         if (isUpThrusterActive && !isRightThrusterActive && !isLeftThrusterActive)
         {
             targetRotation = Quaternion.Euler(0f, 0f, defaultRotationAngle);
@@ -203,6 +322,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        #endregion
     }
     void CheckThrusterStats()
     {
@@ -236,5 +356,47 @@ public class PlayerMovement : MonoBehaviour
     public bool GetThrusterStatus()
     {
         return thrustersRecharged;
+    }
+
+    IEnumerator Dash(Vector2 direction, GameObject thruster)
+    {
+        isDashing = true;
+        thruster.SetActive(true);
+        float startTime = Time.time;
+        //Original Velocity adjustments, time based
+        //while (Time.time - startTime < dashDuration)
+        //{
+        //    rb.velocity = new Vector2(direction.x * dashSpeed, rb.velocity.y);
+        //    yield return null;
+        //}
+
+        //Adding force to velocity, time based
+        //rb.AddForce(direction * dashSpeed, ForceMode2D.Impulse);  // Apply impulse force
+        //yield return new WaitForSeconds(dashDuration);
+
+        //Velocity that keeps going while the key is pressed down.
+        while (isDashing && (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)))
+        {
+            rb.velocity = new Vector2(direction.x * dashSpeed, rb.velocity.y);
+            yield return null; // Wait until the next frame
+        }
+        thruster.SetActive(false);
+        isDashing = false;
+    }
+
+    void ToggleFloating()
+    {
+        if (isFloating)
+        {
+            // Disable floating and reset gravity
+            gravityMultiplier = 1.0f;
+        }
+        else
+        {
+            // Enable floating
+            gravityMultiplier = 0.0f;  // 0 gravity multiplier will make them float in place
+        }
+
+        isFloating = !isFloating;  // Toggle the floating status
     }
 }

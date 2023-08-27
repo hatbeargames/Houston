@@ -15,6 +15,7 @@ public class LaserGun : MonoBehaviour
     [SerializeField] Color aimingColor;
     [SerializeField] Color firingColor;
     [SerializeField] PlayerMovement pm;
+    [SerializeField] PlayerStats ps;
     [SerializeField] EdgeCollider2D laserCollider;
     float aimingWidth = 0.007f;
     public float firingWidth = .05f;
@@ -22,6 +23,7 @@ public class LaserGun : MonoBehaviour
     void Start()
     {
         pm = FindObjectOfType<PlayerMovement>();
+        ps = GameObject.Find("SpaceCraft").GetComponent<PlayerStats>();
         Vector2 posOnScreen = Camera.main.WorldToViewportPoint(transform.position);
         Vector2 mouseOnScreen = (Vector2)Camera.main.ScreenToViewportPoint(Input.mousePosition);
         float angle = AngleDelta(posOnScreen, mouseOnScreen) + offsetAngle;
@@ -36,40 +38,43 @@ public class LaserGun : MonoBehaviour
         {
             laserCollider.points = new Vector2[2] { firePoint.transform.position, firePoint.transform.position };
         }
-        //Current coordinates of the laser Gun
-        Vector2 posOnScreen = Camera.main.WorldToViewportPoint(transform.position);
-
-        //Finds the Vector3 of the mouse position and cast it into a Vector2.
-        Vector2 mouseOnScreen = (Vector2)Camera.main.ScreenToViewportPoint(Input.mousePosition);
-
-        //Function to find the delta of the angle between the two position.
-        float angle = AngleDelta(posOnScreen, mouseOnScreen)+offsetAngle;
-
-        transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, angle));
-        if (pm.GetEnergyStatus())
+        if (!ps.isDead)
         {
-            //Debug.Log("Laser Firing!");
-            isFiring = Input.GetMouseButton(0);
-        }
-        else 
-        { 
-            isFiring = false; 
-        }
-        laserParticles.SetActive(isFiring);
-        DrawLaser();
-        if (isFiring)
-        {
-            lr.startWidth = firingWidth;
-            lr.endWidth = firingWidth;
-            lr.startColor = firingColor;
-            lr.endColor = firingColor;
-        }
-        else
-        {
-            lr.startWidth = aimingWidth;
-            lr.endWidth = aimingWidth;
-            lr.startColor = aimingColor;
-            lr.endColor = aimingColor;
+            //Current coordinates of the laser Gun
+            Vector2 posOnScreen = Camera.main.WorldToViewportPoint(transform.position);
+
+            //Finds the Vector3 of the mouse position and cast it into a Vector2.
+            Vector2 mouseOnScreen = (Vector2)Camera.main.ScreenToViewportPoint(Input.mousePosition);
+
+            //Function to find the delta of the angle between the two position.
+            float angle = AngleDelta(posOnScreen, mouseOnScreen) + offsetAngle;
+
+            transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, angle));
+            if (ps.currentEnergy > 0)
+            {
+                //Debug.Log("Laser Firing!");
+                isFiring = Input.GetMouseButton(0);
+            }
+            else
+            {
+                isFiring = false;
+            }
+            laserParticles.SetActive(isFiring);
+            DrawLaser();
+            if (isFiring)
+            {
+                lr.startWidth = firingWidth;
+                lr.endWidth = firingWidth;
+                lr.startColor = firingColor;
+                lr.endColor = firingColor;
+            }
+            else
+            {
+                lr.startWidth = aimingWidth;
+                lr.endWidth = aimingWidth;
+                lr.startColor = aimingColor;
+                lr.endColor = aimingColor;
+            }
         }
     }
     void DrawLaser()
