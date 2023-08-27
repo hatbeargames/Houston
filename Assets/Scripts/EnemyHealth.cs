@@ -11,10 +11,12 @@ public class EnemyHealth : MonoBehaviour
     private PlayerCollision pc;
     [SerializeField] private float minChance;
     [SerializeField] private float maxChance;
+    private PlayerSFX pSFX;
     private float spawnChance;
     // Start is called before the first frame update
     void Start()
     {
+        pSFX = FindAnyObjectByType<PlayerSFX>();
         currentHealth = startingHealth;
         healthBar.SetMaxBarValue(startingHealth);
         spawnChance = Random.Range(minChance, maxChance);
@@ -41,6 +43,7 @@ public class EnemyHealth : MonoBehaviour
             {
                 cts.SpawnRandomObject(spawnChance);
             }
+            pSFX.EnemyKilled();
             Destroy(this.gameObject);
         }
     }

@@ -17,11 +17,14 @@ public class Dialogue : MonoBehaviour
     private bool DPressed;
     private bool LeftClickPressed;
     private bool RightClickPressed;
+    [SerializeField]private AudioSource keyType;
+    public float minPitch = 0.8f;  // Minimum pitch value
+    public float maxPitch = 1.2f;  // Maximum pitch value
     // Start is called before the first frame update
     void Start()
     {
         textComp.text = string.Empty;
-        StartDialogue();
+        StartCoroutine(InitiateDialogue());
     }
 
     // Update is called once per frame
@@ -46,15 +49,22 @@ public class Dialogue : MonoBehaviour
         index = 0;
         StartCoroutine(TypeLine());
     }
-
+    IEnumerator InitiateDialogue()
+    {
+        yield return new WaitForSeconds(5f);
+        StartDialogue();
+    }
     IEnumerator TypeLine()
     {
+        keyType.Play();
         //Type each character 1 by 1
-        foreach(char c in TutorialLines[index].ToCharArray())
+        foreach (char c in TutorialLines[index].ToCharArray())
         {
+            keyType.pitch = Random.Range(minPitch, maxPitch);
             textComp.text += c;
             yield return new WaitForSeconds(textSpeed);
         }
+        keyType.Stop();
     }
 
     void NextLine()

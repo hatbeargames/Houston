@@ -8,11 +8,13 @@ public class PlayerCollision : MonoBehaviour
     private PlayerStats playerStats;
     private PlayerMovement pm;
     private Coroutine damageCoroutine;
+    private PlayerSFX pSFX;
     private void Start()
     {
         // Get the PlayerStats component.
         playerStats = GetComponent<PlayerStats>();
         pm = GetComponent<PlayerMovement>();
+        pSFX = FindAnyObjectByType<PlayerSFX>();
         if (playerStats == null)
         {
             Debug.LogError("PlayerStats component not found on " + gameObject.name);
@@ -78,6 +80,7 @@ public class PlayerCollision : MonoBehaviour
         while (enemyGameObject != null && enemyGameObject.activeInHierarchy)
         {
             // Call the TakeDamage function from the PlayerStats script using the damage value from EnemyStats.
+            pSFX.PlayerDamage();
             playerStats.TakeDamage(enemyStats.damage);
             yield return new WaitForSeconds(1f);  // Wait for 1 second
         }

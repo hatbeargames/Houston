@@ -9,12 +9,14 @@ public class PickupItem : MonoBehaviour
     private int value;
     [SerializeField] private GameObject player;
     private PlayerStats playerStats;
+    private PlayerSFX pSFX;
 
     private void Start()
     {
         player = GameObject.Find("SpaceCraft");
         value = Random.Range(valMin, valMax);
         playerStats = player.GetComponent<PlayerStats>();
+        pSFX = FindAnyObjectByType<PlayerSFX>();
 
         // Initialize the Rigidbody2D for the item to interact with other physics objects
         //rb = GetComponent<Rigidbody2D>();
@@ -41,28 +43,29 @@ public class PickupItem : MonoBehaviour
 
     private void ConsumeItem(GameObject player)
     {
+        pSFX.PlayPowerUp();
         switch (gameObject.tag)
         {
             case "HealthPickup":
                 // Handle health pickup
-                Debug.Log("Health Item Consumed!"+value);
+                //Debug.Log("Health Item Consumed!"+value);
                 playerStats.AddToHealth(value);
                 break;
 
             case "EnergyPickup":
                 // Handle ammo pickup
-                Debug.Log("Energy Item Consumed!"+ value);
+                //Debug.Log("Energy Item Consumed!"+ value);
                 playerStats.AddToEnergy(value);
                 break;
 
             case "FuelPickup":
                 // Handle power up
-                Debug.Log("Fuel Item Consumed!"+ value);
+                //Debug.Log("Fuel Item Consumed!"+ value);
                 playerStats.AddToThrusters(value);
                 break;
 
             default:
-                Debug.Log("Unknown item type!");
+                //Debug.Log("Unknown item type!");
                 break;
         }
 

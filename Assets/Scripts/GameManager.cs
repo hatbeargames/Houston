@@ -26,6 +26,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Material FastMaterial1;
     [SerializeField] private Material burnUpMaterial2;
     [SerializeField] private TMP_Text finalScore;
+    [SerializeField] private GameObject playerSFX;
+    [SerializeField] private GameObject winningPlatform;
+    [SerializeField] private GameObject gameWonUI;
     public TMP_Text myTextObject;
     private PlayerMovement playerMovement;
     private PlayerStats playerStats;
@@ -33,14 +36,23 @@ public class GameManager : MonoBehaviour
     private float TooFastThreshold = 140;
     private float slowDownThreshold;
     private float FastThreshold;
+    private float startingDistance;
     private float distanceToGoal = 20000;
     private bool tutorialCleared = false;
     private bool spawnEnabled = false;
+    private bool nearingGoal = false;
     public int BurnDamage;
     private bool burningUp;
     private TopScoreTracker tst;
+
+    //End game checks
+    private bool endGame_PlatformSet = false;
+    private bool endGame_SpawnPoints;
+    private bool endGame_WinningScreen;
+    private bool endGame_PlayerMovement;
     void Start()
     {
+        startingDistance = distanceToGoal;
         tst = FindAnyObjectByType<TopScoreTracker>();
         slowDownThreshold = TooFastThreshold * .50f;
         FastThreshold = TooFastThreshold * .75f;
@@ -50,6 +62,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        GameWonCheck();
         CheckSpeed();
         burnUp.SetActive(burningUp);
         burnUp2.SetActive(burningUp);
@@ -73,7 +86,7 @@ public class GameManager : MonoBehaviour
         if (!tutorialCleared)
         {
             TutorialCheck();
-        } else if(!spawnEnabled)
+        } else if(!spawnEnabled && !nearingGoal)
         {
             EnableSpawnPoint();
         }
@@ -82,6 +95,11 @@ public class GameManager : MonoBehaviour
             GameOverCheck();
         }
         PlayerStatCheck();
+
+        if (nearingGoal)
+        {
+            SetUpEndGame();
+        }
         //Debug.Log("Speed" + playerSpeed + ", Altitude" + distanceToGoal);
     }
 
@@ -93,10 +111,18 @@ public class GameManager : MonoBehaviour
         GG = playerStats.isDead;
         if (GG) 
         { 
-            SetScore(); 
+            SetScore();
+            playerSFX.SetActive(!GG);
         }
     }
-
+    void GameWonCheck()
+    {
+        nearingGoal = (distanceToGoal < startingDistance * 0.01f);
+        if(distanceToGoal < startingDistance * 0.01f)
+        {
+            //Debug.Log("You won the game!");
+        }
+    }
     void PlayerStatCheck()
     {
         energyBarCritical.SetActive(playerStats.currentEnergy <= (playerStats.GetMaxEnergy() * WarningThreshold));
@@ -120,7 +146,7 @@ public class GameManager : MonoBehaviour
     }
     private void TutorialCheck()
     {
-        if (distanceToGoal <= 19800 && !dialogueBox.activeSelf)
+        if (distanceToGoal <= startingDistance * 0.985f && !dialogueBox.activeSelf)
         {
             ClearTutorialArea();
         }
@@ -172,5 +198,31 @@ public class GameManager : MonoBehaviour
         {
             tst.SetTopScore( (int)distanceToGoal);
         }
+    }
+
+    void SetUpEndGame()
+    {
+        if (!endGame_PlatformSet)
+        {
+            //Debug.Log("Setting Up Platform: " + (player.transform.position.y - distanceToGoal + ", Players Pos: "+player.transform.position.y));
+            GameObject instantiatedPlatform = Instantiate(winningPlatform, new Vector3(player.transform.position.x, player.transform.position.y - distanceToGoal, 0), Quaternion.identity);
+            endGame_PlatformSet = true;
+        }
+        if (!endGame_PlayerMovement)
+        {
+            playerMovement.enabled = false;
+            endGame_PlayerMovement = true;
+        }
+        if (!endGame_SpawnPoints)
+        {
+            spawnPoints.SetActive(false);
+            endGame_SpawnPoints = true;
+        }
+        if (!endGame_WinningScreen)
+        {
+            gameWonUI.SetActive(true);
+            endGame_WinningScreen = true;
+        }
+
     }
 }

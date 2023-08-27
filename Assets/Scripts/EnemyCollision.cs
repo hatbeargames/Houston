@@ -5,6 +5,7 @@ public class EnemyCollision : MonoBehaviour
 {
     private EnemyHealth enemyHealth;
     private Coroutine damageCoroutine;
+    private PlayerSFX pSFX;
 
     [SerializeField] private int laserDamage = 10; // Damage to take if hit by laser
     [SerializeField] private int shieldDamage = 30; // Damage to take if hit by shield
@@ -12,6 +13,10 @@ public class EnemyCollision : MonoBehaviour
     private void Awake()
     {
         enemyHealth = GetComponent<EnemyHealth>();
+    }
+    private void Start()
+    {
+        pSFX = FindAnyObjectByType<PlayerSFX>();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -67,7 +72,7 @@ public class EnemyCollision : MonoBehaviour
                 break;
 
             case "shield":
-                
+                pSFX.ShieldCollision();
                 enemyHealth.TakeDamage(shieldDamage);
                 break;
 

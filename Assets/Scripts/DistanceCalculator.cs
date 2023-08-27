@@ -6,7 +6,7 @@ public class DistanceCalculator : MonoBehaviour
     public GameObject player;
     public Vector3 target;
     [SerializeField] TMP_Text alt;
-    public int goalDistance = 20000;
+    public int goalDistance;
     [SerializeField] GameManager gm;
     PlayerStats ps;
     
