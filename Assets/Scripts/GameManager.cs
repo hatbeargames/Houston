@@ -37,13 +37,13 @@ public class GameManager : MonoBehaviour
     private float slowDownThreshold;
     private float FastThreshold;
     private float startingDistance;
-    private float distanceToGoal = 20000;
+    private float distanceToGoal = 5000;
     private bool tutorialCleared = false;
     private bool spawnEnabled = false;
     private bool nearingGoal = false;
     public int BurnDamage;
     private bool burningUp;
-    private TopScoreTracker tst;
+    private TopScoreTracker topScoreTracker;
 
     //End game checks
     private bool endGame_PlatformSet = false;
@@ -53,7 +53,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         startingDistance = distanceToGoal;
-        tst = FindAnyObjectByType<TopScoreTracker>();
+        topScoreTracker = FindAnyObjectByType<TopScoreTracker>();
         slowDownThreshold = TooFastThreshold * .50f;
         FastThreshold = TooFastThreshold * .75f;
         playerMovement = player.GetComponent<PlayerMovement>();
@@ -158,7 +158,7 @@ public class GameManager : MonoBehaviour
     }
     private void CheckSpeed()
     {
-        burningUp = (playerSpeed >= TooFastThreshold);
+        burningUp = (playerSpeed >= TooFastThreshold) && player.isSh;
     }
     // This method will be invoked repeatedly to deal burning damage
     void DealBurningDamage()
@@ -194,9 +194,9 @@ public class GameManager : MonoBehaviour
     }
     void SetTopScore()
     {
-        if(distanceToGoal < tst.GetTopScore())
+        if(distanceToGoal < topScoreTracker.GetTopScore())
         {
-            tst.SetTopScore( (int)distanceToGoal);
+            topScoreTracker.SetTopScore( (int)distanceToGoal);
         }
     }
 
