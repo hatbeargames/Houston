@@ -158,7 +158,7 @@ public class GameManager : MonoBehaviour
     }
     private void CheckSpeed()
     {
-        burningUp = (playerSpeed >= TooFastThreshold) && player.isSh;
+        burningUp = (playerSpeed >= TooFastThreshold);
     }
     // This method will be invoked repeatedly to deal burning damage
     void DealBurningDamage()
