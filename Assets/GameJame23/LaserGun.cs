@@ -17,8 +17,8 @@ public class LaserGun : MonoBehaviour
     [SerializeField] PlayerMovement pm;
     [SerializeField] PlayerStats ps;
     [SerializeField] EdgeCollider2D laserCollider;
-    float aimingWidth = 0.007f;
-    public float firingWidth = .05f;
+    float aimingWidth = 0.05f;
+    public float firingWidth = .25f;
     // Start is called before the first frame update
     void Start()
     {

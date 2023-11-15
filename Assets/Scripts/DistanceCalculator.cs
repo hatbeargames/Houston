@@ -6,15 +6,17 @@ public class DistanceCalculator : MonoBehaviour
     public GameObject player;
     public Vector3 target;
     [SerializeField] TMP_Text alt;
-    public int goalDistance;
+    [SerializeField] int goalDistance;
     [SerializeField] GameManager gm;
     PlayerStats ps;
     
     private void Start()
     {
+        ps = player.GetComponent<PlayerStats>();
+        goalDistance = (int)ps.GetGoal();
         target = new Vector3(0, player.transform.position.y - goalDistance);
         //gm = GameObject.Find("GameManger").GetComponent<GameManager>();
-        ps = player.GetComponent<PlayerStats>();
+
     }
     void Update()
     {
@@ -26,7 +28,7 @@ public class DistanceCalculator : MonoBehaviour
         alt.text = "Altitude:" + (int)altitudeInKm + "Km";
         gm.SetDistanceToGoal((int)altitudeInKm);
     }
-
+    public 
     float CalculateAltitude()
     {
         // Calculate the target position based on the player's position, 20,000 units below

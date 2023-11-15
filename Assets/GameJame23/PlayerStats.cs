@@ -17,6 +17,7 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] float AuxillaryThrusterThreshold = .9f;
     [SerializeField] float altitude;
     [SerializeField] float speed;
+    [SerializeField] float goalDistance;
     //PUBLIC INTS FOR CHECKING
     public int currentHealth;
     public float currentThrusters;
@@ -157,5 +158,9 @@ public class PlayerStats : MonoBehaviour
         currentThrusters = Mathf.Clamp(currentThrusters + fuelPickup, 0, startingThrusters);
         //currentThrusters += fuelPickup;
         ThrusterBar.SetBarValue(currentThrusters);
+    }
+    public float GetGoal()
+    {
+        return goalDistance;
     }
 }

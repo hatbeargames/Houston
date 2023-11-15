@@ -32,6 +32,8 @@ public class PlayerMovement : MonoBehaviour
     public float maxVerticalSpeed = 5f;    // Adjust as needed for max upward speed
     public float thrusterConsumptionRate = 10f;
     public float energyConsumptionRate = 10f;
+    public float baseEnergyConsumptionRate = 10f;
+    public float increasedEnergyConsumptionRate = 20f;
 
     //INPUT VARIABLES
     bool isLeftThrusterActive;
@@ -48,8 +50,8 @@ public class PlayerMovement : MonoBehaviour
     public InputAction playerControls;
     LaserGun lg;
     public float verticalVelocity;
-    public float dashSpeed = 100f;
-    public float dashDuration = 3f;
+    public float dashSpeed = 10f;
+    //public float dashDuration = 3f;
     public float maxTimeBetweenTaps = 0.3f; // Time allowed between double taps
     private float lastTapTimeLeft = 0f;
     private float lastTapTimeRight = 0f;
@@ -186,6 +188,7 @@ public class PlayerMovement : MonoBehaviour
             if (Time.time - lastTapTimeLeft < maxTimeBetweenTaps)
             {
                 rotationSpeed = rotationSpeed * 2;
+                rb.AddForce(-Vector2.right * dashSpeed, ForceMode2D.Impulse);  // Apply impulse force
                 StartCoroutine(Dash(-Vector2.right,L_Dash_Thruster));  // Negative for left direction
             }
             else
@@ -201,6 +204,7 @@ public class PlayerMovement : MonoBehaviour
             if (Time.time - lastTapTimeRight < maxTimeBetweenTaps)
             {
                 rotationSpeed = rotationSpeed * 2;
+                rb.AddForce(Vector2.right * dashSpeed, ForceMode2D.Impulse);  // Apply impulse force
                 StartCoroutine(Dash(Vector2.right,R_Dash_Thruster));   // Positive for right direction
             }
             else
@@ -362,22 +366,12 @@ public class PlayerMovement : MonoBehaviour
     {
         isDashing = true;
         thruster.SetActive(true);
-        float startTime = Time.time;
-        //Original Velocity adjustments, time based
-        //while (Time.time - startTime < dashDuration)
-        //{
-        //    rb.velocity = new Vector2(direction.x * dashSpeed, rb.velocity.y);
-        //    yield return null;
-        //}
-
-        //Adding force to velocity, time based
-        //rb.AddForce(direction * dashSpeed, ForceMode2D.Impulse);  // Apply impulse force
-        //yield return new WaitForSeconds(dashDuration);
 
         //Velocity that keeps going while the key is pressed down.
         while (isDashing && (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)))
         {
             rb.velocity = new Vector2(direction.x * dashSpeed, rb.velocity.y);
+            //rb.AddForce(direction * dashSpeed, ForceMode2D.Impulse);  // Apply impulse force
             yield return null; // Wait until the next frame
         }
         thruster.SetActive(false);

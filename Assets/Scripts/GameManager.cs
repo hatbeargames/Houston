@@ -64,9 +64,21 @@ public class GameManager : MonoBehaviour
     {
         GameWonCheck();
         CheckSpeed();
-        burnUp.SetActive(burningUp);
-        burnUp2.SetActive(burningUp);
-        burnUp3.SetActive(burningUp);
+        bool placeholder = burningUp && !playerMovement.GetShieldStatus();
+        //Debug.Log(placeholder);
+        burnUp.SetActive(placeholder);
+        burnUp2.SetActive(placeholder);
+        burnUp3.SetActive(placeholder);
+        if(burningUp && playerMovement.GetShieldStatus() && playerMovement.energyConsumptionRate != playerMovement.increasedEnergyConsumptionRate)
+        {
+            //Debug.Log("Increase Energy Consumption Rate");
+            playerMovement.energyConsumptionRate = playerMovement.increasedEnergyConsumptionRate;
+        }
+        else if(!burningUp && playerMovement.energyConsumptionRate != playerMovement.baseEnergyConsumptionRate)
+        {
+            //Debug.Log("Decrease Energy Consumption Rate");
+            playerMovement.energyConsumptionRate = playerMovement.baseEnergyConsumptionRate;
+        }
         SetHUDColor();
         if (!playerStats.isDead)
         {
@@ -163,7 +175,10 @@ public class GameManager : MonoBehaviour
     // This method will be invoked repeatedly to deal burning damage
     void DealBurningDamage()
     {
-        playerStats.TakeDamage(BurnDamage);
+        if (burningUp && !playerMovement.GetShieldStatus())
+        {
+            playerStats.TakeDamage(BurnDamage);
+        }
     }
     public void ReloadCurrentScene()
     {
@@ -199,7 +214,10 @@ public class GameManager : MonoBehaviour
             topScoreTracker.SetTopScore( (int)distanceToGoal);
         }
     }
-
+    public float GetGoal()
+    {
+        return distanceToGoal;
+    }
     void SetUpEndGame()
     {
         if (!endGame_PlatformSet)

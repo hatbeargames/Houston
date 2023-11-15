@@ -52,3 +52,6 @@ TagManager:
   - name: BG
     uniqueID: 261545091
     locked: 0
+  - name: turret
+    uniqueID: 1485385969
+    locked: 0

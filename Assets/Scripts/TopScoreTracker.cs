@@ -8,7 +8,7 @@ public class TopScoreTracker : MonoBehaviour
     [SerializeField] GameManager gm;
     public static TopScoreTracker Instance;
     [SerializeField]private TMP_Text topScore;
-    private int topScoreValue = 20000;
+    private int topScoreValue;
     // Start is called before the first frame update
 
     private void Awake()
@@ -26,7 +26,7 @@ public class TopScoreTracker : MonoBehaviour
     void Start()
     {
         gm = FindObjectOfType<GameManager>();
-        //topScore = GetComponent<TMP_Text>();
+        topScoreValue = (int)gm.GetGoal();
     }
 
     // Update is called once per frame
